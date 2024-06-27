@@ -9,17 +9,23 @@ const io =new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 //socket.io
+//handle connection
 io.on('connection', (socket) => {
   socket.on("user-message",(message)=>{
-    io.emit("message",message)
+    io.emit("message",message) //server to client2
   })
 });
-
-
+ 
+//handle disconnection
+socket.on('disconnect', () => {
+  console.log('Disconnected from server');
+});
 
 
 app.get('/',(req,res)=>{
   res.send("/public/index.html");
 })
+
+
 
 server.listen(7000,()=> console.log(`Server Started at PORT 7000`));

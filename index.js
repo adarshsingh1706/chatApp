@@ -14,12 +14,14 @@ io.on('connection', (socket) => {
   socket.on("user-message",(message)=>{
     io.emit("message",message) //server to client2
   })
-});
- 
-//handle disconnection
-socket.on('disconnect', () => {
+  //handle disconnection
+socket.on('disconnect', (socket) => {
+  console.log('A user connected:', socket.id);
   console.log('Disconnected from server');
 });
+});
+ 
+
 
 
 app.get('/',(req,res)=>{

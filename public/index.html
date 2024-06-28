@@ -4,33 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Chatting</h1>
-  <input type="text" id="message" placeholder="Enter message"/>
-  <button id="sendbtn">SEND</button>
-  <div id="messages"></div>
+  <div id="chat-container">
+    <div id="messages"></div>
+    <div id="input-container">
+      <input type="text" id="message" placeholder="Enter message"/>
+      <button id="sendbtn">SEND</button>
+    </div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();    //io(url of backend) when frontend is on some other server
+    const socket = io(); //io(url of backend) when frontend is on some other server
     const sendbtn = document.getElementById("sendbtn");
     const messageInput = document.getElementById("message");
-    const allMsgs = document.getElementById("messages")
+    const allMsgs = document.getElementById("messages");
 
-    socket.on("message",(message)=>{
+    // Mock user ID for client 1
+    const userId = 'client_' + Math.random().toString(36).substr(2, 9);
+
+    socket.on("message", (data) => {
+      const { message, sender } = data;
       const p = document.createElement("p");
       p.innerText = message;
+      p.classList.add(sender === userId ? 'sent' : 'received');
       allMsgs.appendChild(p);
-    })
+      allMsgs.scrollTop = allMsgs.scrollHeight; // Auto-scroll to bottom
+    });
 
-
-    sendbtn.addEventListener("click",(e)=>{
+    sendbtn.addEventListener("click", (e) => {
       const message = messageInput.value;
-      socket.emit('user-message',message ) //client1 to server
-    })
-
-
+      socket.emit('user-message', { message, sender: userId }); // Send message with sender info
+      messageInput.value = ''; // Clear input after sending
+    });
   </script>
 </body>
 </html>
